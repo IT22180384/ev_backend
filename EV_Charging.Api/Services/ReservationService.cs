@@ -21,6 +21,7 @@ namespace EV_Charging.Api.Services
     {
         Task<IEnumerable<ReservationResponseDto>> GetAllReservationsAsync();
         Task<ReservationResponseDto?> GetReservationByIdAsync(string id);
+        Task<ReservationResponseDto?> GetReservationByBookingIdAsync(string bookingId);
         Task<ReservationResponseDto> CreateReservationAsync(ReservationCreateDto reservationDto);
         Task<ReservationResponseDto?> UpdateReservationAsync(string id, ReservationUpdateDto reservationDto, bool allowAdminOverride = false);
         Task<bool> CancelReservationAsync(string id, bool allowAdminOverride = false);
@@ -67,6 +68,12 @@ namespace EV_Charging.Api.Services
                 reservation = await _context.Reservations.Find(r => r.BookingId == id).FirstOrDefaultAsync();
             }
 
+            return reservation != null ? MapToResponseDto(reservation) : null;
+        }
+
+        public async Task<ReservationResponseDto?> GetReservationByBookingIdAsync(string bookingId)
+        {
+            var reservation = await _context.Reservations.Find(r => r.BookingId == bookingId).FirstOrDefaultAsync();
             return reservation != null ? MapToResponseDto(reservation) : null;
         }
 

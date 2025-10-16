@@ -107,20 +107,20 @@ namespace EV_Charging.Api.Controllers
             }
         }
 
-        // Updates an existing reservation (minimum 12 hours before start time)
-        [HttpPut("{id}")]
-        public async Task<ActionResult<ReservationResponseDto>> UpdateReservation(string id, ReservationUpdateDto reservationDto)
+        // Updates reservation using booking id (minimum 12 hours before start time)
+        [HttpPut("booking/{bookingId}")]
+        public async Task<ActionResult<ReservationResponseDto>> UpdateReservationByBooking(string bookingId, ReservationUpdateDto reservationDto)
         {
             try
             {
-                var existing = await _reservationService.GetReservationByIdAsync(id);
+                var existing = await _reservationService.GetReservationByBookingIdAsync(bookingId);
                 if (existing == null)
                     return NotFound();
 
                 if (!IsAdmin && existing.UserId != CurrentUserId)
                     return Forbid();
 
-                var reservation = await _reservationService.UpdateReservationAsync(id, reservationDto, IsAdmin);
+                var reservation = await _reservationService.UpdateReservationAsync(existing.Id, reservationDto, IsAdmin);
                 return Ok(reservation);
             }
             catch (InvalidOperationException ex)
@@ -129,20 +129,20 @@ namespace EV_Charging.Api.Controllers
             }
         }
 
-        // Cancels a reservation (minimum 12 hours before start time)
-        [HttpPatch("cancel/{id}")]
-        public async Task<ActionResult> CancelReservation(string id)
+        // Cancels a reservation using booking id (minimum 12 hours before start time)
+        [HttpPatch("booking/cancel/{bookingId}")]
+        public async Task<ActionResult> CancelReservationByBooking(string bookingId)
         {
             try
             {
-                var reservation = await _reservationService.GetReservationByIdAsync(id);
+                var reservation = await _reservationService.GetReservationByBookingIdAsync(bookingId);
                 if (reservation == null)
                     return NotFound();
 
                 if (!IsAdmin && reservation.UserId != CurrentUserId)
                     return Forbid();
 
-                var result = await _reservationService.CancelReservationAsync(id, IsAdmin);
+                var result = await _reservationService.CancelReservationAsync(reservation.Id, IsAdmin);
                 if (!result)
                     return NotFound();
 
