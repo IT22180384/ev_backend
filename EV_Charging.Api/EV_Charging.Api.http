@@ -1,0 +1,43 @@
+@EV_Charging.Api_HostAddress = http://localhost:5002
+
+GET {{EV_Charging.Api_HostAddress}}/
+Accept: application/json
+
+###
+
+# Admin Login
+POST {{EV_Charging.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@evcharging.com",
+  "password": "Admin@123"
+}
+
+###
+
+# EV Owner Registration
+POST {{EV_Charging.Api_HostAddress}}/api/evowners/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "nic": "123456789V",
+  "password": "password123",
+  "phone": "0771234567",
+  "vehicleType": "Tesla Model 3"
+}
+
+###
+
+# EV Owner Login
+POST {{EV_Charging.Api_HostAddress}}/api/evowners/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+
+###
