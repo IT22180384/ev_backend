@@ -108,8 +108,8 @@ namespace EV_Charging.Api.Controllers
         }
 
         // Updates an existing reservation (minimum 12 hours before start time)
-        [HttpPut("{id}/user/{userId}")]
-        public async Task<ActionResult<ReservationResponseDto>> UpdateReservation(string id, string userId, ReservationUpdateDto reservationDto)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ReservationResponseDto>> UpdateReservation(string id, ReservationUpdateDto reservationDto)
         {
             try
             {
@@ -117,10 +117,7 @@ namespace EV_Charging.Api.Controllers
                 if (existing == null)
                     return NotFound();
 
-                if (!string.Equals(existing.UserId, userId, StringComparison.Ordinal))
-                    return Forbid();
-
-                if (!IsAdmin && (string.IsNullOrEmpty(CurrentUserId) || !string.Equals(CurrentUserId, userId, StringComparison.Ordinal)))
+                if (!IsAdmin && existing.UserId != CurrentUserId)
                     return Forbid();
 
                 var reservation = await _reservationService.UpdateReservationAsync(id, reservationDto, IsAdmin);
@@ -133,8 +130,8 @@ namespace EV_Charging.Api.Controllers
         }
 
         // Cancels a reservation (minimum 12 hours before start time)
-        [HttpPatch("{id}/cancel/user/{userId}")]
-        public async Task<ActionResult> CancelReservation(string id, string userId)
+        [HttpPatch("cancel/{id}")]
+        public async Task<ActionResult> CancelReservation(string id)
         {
             try
             {
@@ -142,10 +139,7 @@ namespace EV_Charging.Api.Controllers
                 if (reservation == null)
                     return NotFound();
 
-                if (!string.Equals(reservation.UserId, userId, StringComparison.Ordinal))
-                    return Forbid();
-
-                if (!IsAdmin && (string.IsNullOrEmpty(CurrentUserId) || !string.Equals(CurrentUserId, userId, StringComparison.Ordinal)))
+                if (!IsAdmin && reservation.UserId != CurrentUserId)
                     return Forbid();
 
                 var result = await _reservationService.CancelReservationAsync(id, IsAdmin);
